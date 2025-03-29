@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">Portfolio</a>
+            <button class="mobile-menu-btn">☰</button>
+            <ul class="nav-links">
+                <li><a href="/home.html">Projects</a></li>
+                <li><a href="/about.html">About</a></li>
+                <li><a href="/contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Project Template -->
+    <template id="project-card-template">
+        <a class="project-link">
+            <div class="project-card">
+                <img class="project-image" src="" alt="Project">
+                <h3 class="project-name"></h3>
+                <p class="project-description"></p>
+            </div>
+        </a>
+    </template>
+
+    <!-- Projects here -->
+    <div class="project-container"></div>
+
+    <script>
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        async function loadProjects() {
+            try {
+                const response = await fetch('projects.json');
+                const data = await response.json();
+                
+                const projectContainer = document.querySelector('.project-container');
+                const template = document.getElementById('project-card-template');
+
+                const projects = Object.values(data).flat();
+
+                projectContainer.innerHTML = '';
+
+                projects.forEach(project => {
+                    const projectCard = template.content.cloneNode(true);
+                    
+                    const link = projectCard.querySelector('.project-link');
+                    link.href = project.link;
+                    projectCard.querySelector('.project-image').src = project.image;
+                    projectCard.querySelector('.project-name').textContent = project.name;
+                    projectCard.querySelector('.project-description').textContent = project.description;
+                    
+                    projectContainer.appendChild(projectCard);
+                });
+
+            } catch (error) {
+                console.error('Error loading projects:', error);
+                const projectContainer = document.querySelector('.project-container');
+                projectContainer.innerHTML = '<p style="color: red; text-align: center;">Error loading projects. Please try again later.</p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProjects);
+    </script>
+</body>
+</html>
